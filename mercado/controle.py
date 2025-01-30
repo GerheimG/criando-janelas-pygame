@@ -73,3 +73,4 @@ for item in estoque:
         f'| Categoria: {item["Categoria"]} | Preço: {item["Preço"]} '
         f'| Quantidade: {item["Quantidade"]}')
     print('=' * 65)
+# aaaaaaa
