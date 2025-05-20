@@ -6,29 +6,50 @@ import cores
 import pygame
 import sys
 from principal import janela_principal
+from tela_logado import tela_logar
 
 
 pygame.init()
 
-# Define as dimensões da janela
-largura = 800
-altura = 500
-
+padrao_cursor = pygame.SYSTEM_CURSOR_ARROW
+mao_cursor = pygame.SYSTEM_CURSOR_HAND
+digitar = pygame.SYSTEM_CURSOR_IBEAM
 # Fonte
 fonte = pygame.font.SysFont('Unicode', 40)
 
 
+
+
 def tela_entrar(tela):
-    botao_voltar = pygame.Rect(100, 400, 100, 50) # x, y, largura, altura
-    email_input = pygame.Rect(100, 150, 400, 50)
-    senha_input = pygame.Rect(100, 300, 400, 50)
+    botao_logar = pygame.Rect(850, 400, 100, 50)
+    botao_voltar = pygame.Rect(650, 400, 100, 50) # x, y, largura, altura
+    email_input = pygame.Rect(600, 150, 400, 50)
+    senha_input = pygame.Rect(600, 300, 400, 50)
     texto_email = ''
     texto_senha = ''
     email_ativo = False
     senha_ativo = False
 
 
+     # Variáveis de controle de "rolagem" do texto
+    offset_email = 0
+    offset_senha = 0
+    scroll_speed = 5  # Velocidade da rolagem (quanto maior, mais rápido o texto vai rolar)
+
     while True:
+
+        mouse_pos = pygame.mouse.get_pos()
+
+        # Verifica se o mouse está sobre os campos de texto ou botão voltar
+        if email_input.collidepoint(mouse_pos) or senha_input.collidepoint(mouse_pos):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)  # Cursor de texto
+        elif botao_voltar.collidepoint(mouse_pos) or botao_logar.collidepoint(mouse_pos):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -37,6 +58,10 @@ def tela_entrar(tela):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_voltar.collidepoint(event.pos):
                     return janela_principal()
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if botao_logar.collidepoint(event.pos):
+                    return tela_logar()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if email_input.collidepoint(event.pos):
@@ -96,14 +121,30 @@ def tela_entrar(tela):
         texto_renderizado_email = fonte.render(texto_email, True, cor_email)
         texto_renderizado_senha = fonte.render(texto_senha, True, cor_senha)
 
-        # Exibe o texto digitado dentro dos campos
-        tela.blit(texto_renderizado_email, (email_input.x + 5, email_input.y + 5))
-        tela.blit(texto_renderizado_senha, (senha_input.x + 5, senha_input.y + 5))
         
         pygame.draw.rect(tela, cores.VERMELHO_ESCURO , botao_voltar)
         texto = fonte.render('Voltar', True, cores.PRETO)
         texto_rect = texto.get_rect(center=botao_voltar.center)
         tela.blit(texto, texto_rect)
+
+        pygame.draw.rect(tela, cores.OURO , botao_logar)
+        texto = fonte.render('Entrar', True, cores.PRETO)
+        texto_rect = texto.get_rect(center=botao_logar.center)
+        tela.blit(texto, texto_rect)
+
+        # Calcula deslocamento para mostrar final do texto se for maior que o campo
+        offset_email = max(0, texto_renderizado_email.get_width() - (email_input.width - 10))
+        offset_senha = max(0, texto_renderizado_senha.get_width() - (senha_input.width - 10))
+
+        # Clip e blit dos campos
+        tela.set_clip(email_input)
+        tela.blit(texto_renderizado_email, (email_input.x + 5 - offset_email, email_input.y + 5))
+        tela.set_clip(senha_input)
+        tela.blit(texto_renderizado_senha, (senha_input.x + 5 - offset_senha, senha_input.y + 5))
+        tela.set_clip(None)
+
+        
+
 
         # Atualiza a tela
         pygame.display.update()
