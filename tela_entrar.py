@@ -31,10 +31,9 @@ def tela_entrar(tela):
     senha_ativo = False
 
 
-     # Variáveis de controle de "rolagem" do texto
+    # Variáveis de controle de "rolagem" do texto
     offset_email = 0
     offset_senha = 0
-    scroll_speed = 5  # Velocidade da rolagem (quanto maior, mais rápido o texto vai rolar)
 
     while True:
 
@@ -132,17 +131,23 @@ def tela_entrar(tela):
         texto_rect = texto.get_rect(center=botao_logar.center)
         tela.blit(texto, texto_rect)
 
+        # Cálculo da centralização vertical do texto
+        altura_texto_email = texto_renderizado_email.get_height()
+        altura_texto_senha = texto_renderizado_senha.get_height()
+
+        pos_y_email = email_input.centery - altura_texto_email // 2
+        pos_y_senha = senha_input.centery - altura_texto_senha // 2
+
         # Calcula deslocamento para mostrar final do texto se for maior que o campo
         offset_email = max(0, texto_renderizado_email.get_width() - (email_input.width - 10))
         offset_senha = max(0, texto_renderizado_senha.get_width() - (senha_input.width - 10))
 
         # Clip e blit dos campos
         tela.set_clip(email_input)
-        tela.blit(texto_renderizado_email, (email_input.x + 5 - offset_email, email_input.y + 5))
+        tela.blit(texto_renderizado_email, (email_input.x + 5 - offset_email, pos_y_email))
         tela.set_clip(senha_input)
-        tela.blit(texto_renderizado_senha, (senha_input.x + 5 - offset_senha, senha_input.y + 5))
+        tela.blit(texto_renderizado_senha, (senha_input.x + 5 - offset_senha, pos_y_senha))
         tela.set_clip(None)
-
         
 
 

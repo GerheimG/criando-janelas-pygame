@@ -42,7 +42,6 @@ def tela_registrar(tela):
     offset_cpf = 0
     offset_email = 0
     offset_senha = 0
-    scroll_speed = 5  # Velocidade da rolagem (quanto maior, mais rápido o texto vai rolar)
 
     while True:
 
@@ -166,43 +165,37 @@ def tela_registrar(tela):
         texto_renderizado_email = fonte.render(texto_email, True, cor_email)
         texto_renderizado_senha = fonte.render(texto_senha, True, cor_senha)
 
-        # Faz o texto rolar (movendo-o para a esquerda)
-        if texto_renderizado_nome.get_width() > nome_input.width:
-            offset_nome -= scroll_speed
-            if offset_nome < -texto_renderizado_nome.get_width():
-                offset_nome = nome_input.width  # Reseta a posição para o início
+        # Cálculo da centralização vertical do texto
+        altura_texto_nome = texto_renderizado_nome.get_height()
+        altura_texto_cpf = texto_renderizado_cpf.get_height()
+        altura_texto_email = texto_renderizado_email.get_height()
+        altura_texto_senha = texto_renderizado_senha.get_height()
 
-        if texto_renderizado_cpf.get_width() > cpf_input.width:
-            offset_cpf -= scroll_speed
-            if offset_cpf < -texto_renderizado_cpf.get_width():
-                offset_cpf = cpf_input.width  # Reseta a posição para o início
+        pos_y_nome = nome_input.centery - altura_texto_nome // 2
+        pos_y_cpf = cpf_input.centery - altura_texto_cpf // 2
+        pos_y_email = email_input.centery - altura_texto_email // 2
+        pos_y_senha = senha_input.centery - altura_texto_senha // 2
 
-        if texto_renderizado_email.get_width() > email_input.width:
-            offset_email -= scroll_speed
-            if offset_email < -texto_renderizado_email.get_width():
-                offset_email = email_input.width  # Reseta a posição para o início
-
-        if texto_renderizado_senha.get_width() > senha_input.width:
-            offset_senha -= scroll_speed
-            if offset_senha < -texto_renderizado_senha.get_width():
-                offset_senha = senha_input.width  # Reseta a posição para o início
-
-                # Deslocamento (só mostra o final se for maior que o campo)
+        # Calcula deslocamento para mostrar final do texto se for maior que o campo
         offset_nome = max(0, texto_renderizado_nome.get_width() - (nome_input.width - 10))
         offset_cpf = max(0, texto_renderizado_cpf.get_width() - (cpf_input.width - 10))
         offset_email = max(0, texto_renderizado_email.get_width() - (email_input.width - 10))
         offset_senha = max(0, texto_renderizado_senha.get_width() - (senha_input.width - 10))
 
-        # Clip e blit para cada campo
+        # Clip e blit dos campos
         tela.set_clip(nome_input)
-        tela.blit(texto_renderizado_nome, (nome_input.x + 5 - offset_nome, nome_input.y + 5))
+        tela.blit(texto_renderizado_nome, (nome_input.x + 5 - offset_nome, pos_y_nome))
+
         tela.set_clip(cpf_input)
-        tela.blit(texto_renderizado_cpf, (cpf_input.x + 5 - offset_cpf, cpf_input.y + 5))
+        tela.blit(texto_renderizado_cpf, (cpf_input.x + 5 - offset_cpf, pos_y_cpf))
+
         tela.set_clip(email_input)
-        tela.blit(texto_renderizado_email, (email_input.x + 5 - offset_email, email_input.y + 5))
+        tela.blit(texto_renderizado_email, (email_input.x + 5 - offset_email, pos_y_email))
+
         tela.set_clip(senha_input)
-        tela.blit(texto_renderizado_senha, (senha_input.x + 5 - offset_senha, senha_input.y + 5))
-        tela.set_clip(None)  # Libera o clip
+        tela.blit(texto_renderizado_senha, (senha_input.x + 5 - offset_senha, pos_y_senha))
+
+        tela.set_clip(None)
 
 
         pygame.draw.rect(tela, cores.VERMELHO_ESCURO , botao_voltar)
